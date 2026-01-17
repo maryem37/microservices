@@ -88,7 +88,7 @@ Installation
 1. Clone the Repository
 
 bash
-git clone https://github.com/yourusername/leave-management-system.git
+git clone https://github.com/maryem37/microservices
 cd leave-management-system
 2. Setup Databases
 
