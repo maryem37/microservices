@@ -441,26 +441,7 @@ Create a feature branch (git checkout -b feature/AmazingFeature)
 Commit your changes (git commit -m 'Add some AmazingFeature')
 Push to the branch (git push origin feature/AmazingFeature)
 Open a Pull Request
-📝 License
-This project is licensed under the MIT License - see the LICENSE file for details.
 
-👥 Authors
-Your Name - Initial work
-🙏 Acknowledgments
-Spring Boot team for excellent framework
-OpenFeign for easy microservice communication
-MySQL for reliable database management
-📞 Contact
-For questions or support, please contact:
 
-Email: your.email@example.com
-GitHub: @yourusername
-🗺️ Roadmap
- Add email notifications for leave approval/rejection
- Implement leave balance tracking
- Add employee dashboard
- Support for multiple organizations
- Mobile app integration
- Export reports to PDF/Excel
- Leave history and analytics
+
 Made with ❤️ using Spring Boot
