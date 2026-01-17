@@ -25,8 +25,9 @@ public class JwtAuthenthificationFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        // Exclure les endpoints d'authentification
-        return request.getServletPath().startsWith("/api/auth");
+        String path = request.getServletPath();
+        // Exclude auth endpoints AND user lookup endpoints
+        return path.startsWith("/api/auth") || path.startsWith("/api/users");
     }
 
 

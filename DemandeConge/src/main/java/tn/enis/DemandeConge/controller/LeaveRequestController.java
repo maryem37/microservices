@@ -7,12 +7,11 @@ import tn.enis.DemandeConge.dto.LeaveRequestDto;
 import tn.enis.DemandeConge.services.EmployeReq.EmployerReq;
 
 @RestController
-@RequestMapping("/api/leave")
+//@RequestMapping("/api/leave")
+@RequestMapping("/api/employer/leave") // <- add /employer
 @RequiredArgsConstructor
 public class LeaveRequestController {
-
     private final EmployerReq employerReq;
-
     @PostMapping("/request")
     public ResponseEntity<String> createLeaveRequest(@RequestBody LeaveRequestDto leaveRequestDto) {
         boolean created = employerReq.leaveRequest(leaveRequestDto);

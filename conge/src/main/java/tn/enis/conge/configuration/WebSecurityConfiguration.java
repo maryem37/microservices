@@ -32,6 +32,9 @@ public class WebSecurityConfiguration {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/users/**").permitAll()  // ✅ ADD THIS LINE
+                        .requestMatchers("/api/leave/**").permitAll() // TEMPORARY for testing
+
                         .requestMatchers("/api/employer/**").hasAuthority(UserRole.Employer.name())
                         .requestMatchers("/api/administration/**").hasAuthority(UserRole.Administration.name())
                         .requestMatchers("/api/teamLeader/**").hasAuthority(UserRole.TeamLeader.name())
