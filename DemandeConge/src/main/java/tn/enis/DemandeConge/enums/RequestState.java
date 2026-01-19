@@ -4,5 +4,6 @@ public enum RequestState {
     Pending,
     Approved,
     Rejected,
-    InProgress
+    InProgress ,
+    Cancelled
 }

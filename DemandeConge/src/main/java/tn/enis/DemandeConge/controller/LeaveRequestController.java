@@ -21,6 +21,16 @@ public class LeaveRequestController {
             return ResponseEntity.badRequest().body("Failed to submit leave request. User may not exist.");
         }
     }
-
+    @PutMapping("/{id}/cancel")
+    public ResponseEntity<String> cancelLeaveRequest(
+            @PathVariable Long id,
+            @RequestParam(required = false) String observation) {
+        String result = employerReq.cancelLeaveRequest(id, observation);
+        if (result.equals("Leave request cancelled successfully.")) {
+            return ResponseEntity.ok(result);
+        } else {
+            return ResponseEntity.badRequest().body(result);
+        }
+    }
 
 }

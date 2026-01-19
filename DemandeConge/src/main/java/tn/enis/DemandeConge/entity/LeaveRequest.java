@@ -30,4 +30,6 @@ public class LeaveRequest {
     private String type;
 
     private Long userId;  // <-- store the user ID from the registration service
+    private LocalDate cancellationDate;  // <-- date d'annulation
+    private String cancellationObservation; // <-- observation facultative
 }

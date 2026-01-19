@@ -63,4 +63,44 @@ public class EmployerReqImpl implements EmployerReq {
             return false;
         }
     }
+    @Override
+    public String cancelLeaveRequest(Long leaveRequestId, String observation) {
+        try {
+            // 1️⃣ Get the leave request from the DB
+            LeaveRequest leaveRequest = leaveRequestRepository.findById(leaveRequestId)
+                    .orElse(null);
+
+            if (leaveRequest == null) {
+                return "Leave request not found.";
+            }
+
+            // 2️⃣ Check the state of the leave request
+            if (leaveRequest.getState() == RequestState.Approved) {
+                return "This leave request has already been approved.";
+            }
+            if (leaveRequest.getState() == RequestState.Rejected) {
+                return "This leave request has already been rejected.";
+            }
+            if (leaveRequest.getState() == RequestState.Cancelled) {
+                return "This leave request has already been cancelled and cannot be processed.";
+            }
+            if (leaveRequest.getToDate().isBefore(java.time.LocalDate.now())) {
+                return "Action impossible: the period for this leave request has already passed.";
+            }
+
+            // 3️⃣ Cancel the leave request
+            leaveRequest.setState(RequestState.Cancelled);
+            leaveRequest.setCancellationDate(java.time.LocalDate.now());
+            leaveRequest.setCancellationObservation(observation);
+
+            leaveRequestRepository.save(leaveRequest);
+
+            return "Leave request cancelled successfully.";
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Error occurred while cancelling the leave request.";
+        }
+    }
+
 }
