@@ -46,4 +46,14 @@ public class LeaveRequest {
     // valeur = true si le rôle a validé, false sinon
 
     private String managerNote; // note ajoutée par TeamLeader ou Admin
+    // =====================
+// REFUS
+// =====================
+    @Enumerated(EnumType.STRING)
+    private UserRole rejectedBy;
+
+    private LocalDate rejectionDate;
+    private String rejectionReason;
+    private String rejectionObservation;
+
 }

@@ -8,6 +8,7 @@ import tn.enis.DemandeConge.entity.LeaveRequest;
 import tn.enis.DemandeConge.enums.RequestState;
 import tn.enis.DemandeConge.repository.LeaveRequestRepository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -67,6 +68,55 @@ public class AdminServiceImpl implements AdminService {
         return true;
     }
 
+    @Override
+    public String rejectLeave(
+            Long leaveRequestId,
+            UserRole role,
+            String reason,
+            String observation
+    ) {
+
+        LeaveRequest leaveRequest = leaveRequestRepository.findById(leaveRequestId)
+                .orElseThrow(() -> new RuntimeException("Leave request not found"));
+
+        // ❌ Exception 23: reason is mandatory
+        if (reason == null || reason.isBlank()) {
+            throw new RuntimeException("Exception 23: A rejection reason must be provided!");
+        }
+
+        // ❌ Exception 24: already rejected
+        if (leaveRequest.getState() == RequestState.Rejected) {
+            throw new RuntimeException("Exception 24: Leave request has already been rejected");
+        }
+
+        // ❌ Exception 25: already approved or cancelled
+        if (leaveRequest.getState() == RequestState.Approved ||
+                leaveRequest.getState() == RequestState.Cancelled) {
+            throw new RuntimeException("Exception 25: Leave request is already approved or cancelled");
+        }
+
+        // ❌ Exception 17: respect approval chain
+        if (role == UserRole.Administration &&
+                !leaveRequest.getApprovalChain().getOrDefault(UserRole.TeamLeader, false)) {
+            throw new RuntimeException("Exception 17: Waiting for previous approval in the chain");
+        }
+
+        // ❌ Exception 19: already processed by this user
+        if (leaveRequest.getApprovalChain().getOrDefault(role, false)) {
+            throw new RuntimeException("Exception 19: This request has already been processed by this user");
+        }
+
+        // ✅ FINAL REJECTION
+        leaveRequest.setState(RequestState.Rejected);
+        leaveRequest.setRejectedBy(role);
+        leaveRequest.setRejectionDate(LocalDate.now());
+        leaveRequest.setRejectionReason(reason);
+        leaveRequest.setRejectionObservation(observation);
+
+        leaveRequestRepository.save(leaveRequest);
+
+        return "Leave request rejected successfully";
+    }
 
     @Override
     public List<LeaveRequestDto> getAllPendingLeaveRequests() {

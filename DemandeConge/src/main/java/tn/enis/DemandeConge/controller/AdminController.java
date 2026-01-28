@@ -31,6 +31,21 @@ public class AdminController {
         }
     }
 
+    @PutMapping("/leave/{id}/reject")
+    public ResponseEntity<?> rejectLeave(
+            @PathVariable Long id,
+            @RequestParam UserRole role,
+            @RequestParam String reason,
+            @RequestParam(required = false) String observation
+    ) {
+        try {
+            return ResponseEntity.ok(
+                    adminService.rejectLeave(id, role, reason, observation)
+            );
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 
 
     // =============================================
