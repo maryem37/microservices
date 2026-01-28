@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tn.enis.DemandeConge.services.admin.AdminService;
+import tn.enis.conge.enums.UserRole;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -12,27 +13,37 @@ public class AdminController {
 
     private final AdminService adminService;
 
-    // Changer le statut d'une demande de congé
-    @PutMapping("/leave/{id}/status/{status}")
-    public ResponseEntity<?> changeLeaveStatus(
+    // =============================================
+    // Approve a leave request (TeamLeader or Admin)
+    // =============================================
+    @PutMapping("/leave/{id}/approve")
+    public ResponseEntity<?> approveLeave(
             @PathVariable Long id,
-            @PathVariable String status) {
-
-        boolean success = adminService.changeLeaveStatus(id, status);
-
-        if (success) {
-            return ResponseEntity.ok("Leave request status updated successfully!");
+            @RequestParam(required = false) String note, // optional note from manager
+            @RequestParam UserRole role                  // current user role
+    ) {
+        try {
+            boolean success = adminService.approveLeave(id, note, role);
+            if (success) return ResponseEntity.ok("Leave request approved successfully!");
+            return ResponseEntity.badRequest().body("Unable to approve the leave request");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-        return ResponseEntity.notFound().build();
     }
 
-    // Récupérer les demandes en attente
+
+
+    // =============================================
+    // Get all pending leave requests
+    // =============================================
     @GetMapping("/leave/pending")
     public ResponseEntity<?> getAllPendingLeaveRequests() {
         return ResponseEntity.ok(adminService.getAllPendingLeaveRequests());
     }
 
-    // Récupérer toutes les demandes
+    // =============================================
+    // Get all leave requests
+    // =============================================
     @GetMapping("/leave/all")
     public ResponseEntity<?> getAllLeaveRequests() {
         return ResponseEntity.ok(adminService.getAllLeaveRequests());

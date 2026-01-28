@@ -9,6 +9,10 @@ import tn.enis.DemandeConge.entity.LeaveRequest;
 import tn.enis.DemandeConge.enums.RequestState;
 import tn.enis.DemandeConge.repository.LeaveRequestRepository;
 import feign.FeignException;
+import tn.enis.conge.enums.UserRole;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +43,14 @@ public class EmployerReqImpl implements EmployerReq {
             leaveRequest.setState(RequestState.Pending);
             leaveRequest.setNote(leaveRequestDto.getNote());
             leaveRequest.setType(leaveRequestDto.getType());
+// 4️⃣ Initialize approval chain (TeamLeader → Administration)
+            Map<UserRole, Boolean> approvalChain = new LinkedHashMap<>();
+            approvalChain.put(UserRole.TeamLeader, false);      // TeamLeader must approve first
+            approvalChain.put(UserRole.Administration, false);  // Administration approves second
+            leaveRequest.setApprovalChain(approvalChain);
+
+// 5️⃣ Set initial state
+            leaveRequest.setState(RequestState.Pending);
 
             // 3️⃣ Save to DB
             leaveRequestRepository.save(leaveRequest);
