@@ -35,6 +35,14 @@ public class WebSecurityConfiguration {
                         .requestMatchers("/api/users/**").permitAll()  // ✅ ADD THIS LINE
                         .requestMatchers("/api/leave/**").permitAll() // TEMPORARY for testing
 
+                        // ✅ Autoriser Swagger
+                        .requestMatchers(
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui.html",
+                                "/swagger-ui/index.html"
+                        ).permitAll()
+
                         .requestMatchers("/api/employer/**").hasAuthority(UserRole.Employer.name())
                         .requestMatchers("/api/administration/**").hasAuthority(UserRole.Administration.name())
                         .requestMatchers("/api/teamLeader/**").hasAuthority(UserRole.TeamLeader.name())
