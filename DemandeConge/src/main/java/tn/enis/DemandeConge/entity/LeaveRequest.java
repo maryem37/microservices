@@ -2,8 +2,11 @@ package tn.enis.DemandeConge.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import tn.enis.DemandeConge.enums.LeaveType;
+import tn.enis.DemandeConge.enums.PeriodType;
 import tn.enis.DemandeConge.enums.RequestState;
-import tn.enis.conge.enums.UserRole; // <- IMPORT IMPORTANT
+import tn.enis.conge.enums.UserRole;
+
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -20,16 +23,21 @@ public class LeaveRequest {
 
     private LocalDate fromDate;
     private LocalDate toDate;
+
     private LocalTime fromTime;
     private LocalTime toTime;
 
+    @Enumerated(EnumType.STRING)
+    private PeriodType periodType;
     private Long days;
-
+    private Double hours;
     @Enumerated(EnumType.STRING)
     private RequestState state;
 
     private String note;
-    private String type;
+
+    @Enumerated(EnumType.STRING)
+    private LeaveType type;
 
     private Long userId;  // store the user ID from the registration service
     private LocalDate cancellationDate;  // date d'annulation

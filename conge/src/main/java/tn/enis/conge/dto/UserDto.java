@@ -13,4 +13,6 @@ public class UserDto {
     private Integer numTel;
     private String password;
     private UserRole userRole;
+    private Long departmentId;
+    private String departmentName;
 }

@@ -4,7 +4,6 @@ import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.switchuser.SwitchUserGrantedAuthority;
 import tn.enis.conge.enums.UserRole;
 
 import java.util.Collection;
@@ -19,10 +18,10 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
+    private String lastName;
 
     @Column(nullable = true)
-    private String prenom;
+    private String firstName;
 
     @Column(nullable = false, unique = true)
     private String cin;
@@ -38,6 +37,10 @@ public class User implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
+
+    @ManyToOne
+    @JoinColumn(name = "department_id")
+    private Department department;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
