@@ -25,27 +25,25 @@ public class UserController {
     public ResponseEntity<UserDto> getUserById(@PathVariable Long id) {
         Optional<User> userOptional = userRepository.findById(id);
 
-        if (userOptional.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
+        if (userOptional.isEmpty()) return ResponseEntity.notFound().build();
 
         User user = userOptional.get();
 
-        // Map to DTO
         UserDto userDto = new UserDto();
         userDto.setId(user.getId());
-        userDto.setName(user.getLastName());
+        userDto.setFirstName(user.getFirstName());
+        userDto.setLastName(user.getLastName());
         userDto.setEmail(user.getEmail());
         userDto.setUserRole(user.getUserRole());
-        // --- Remplissage manuel des infos département ---
-        if (user.getDepartment() != null) {
-            userDto.setDepartmentId(user.getDepartment().getId()); // On stocke l'ID
-            userDto.setDepartmentName(user.getDepartment().getNameDepartment()); // On stocke le nom
-        }
-        // Don't expose password!
+        userDto.setNumTel(user.getNumTel());
 
+        if (user.getDepartment() != null) {
+            userDto.setDepartmentId(user.getDepartment().getId());
+            userDto.setDepartmentName(user.getDepartment().getNameDepartment());
+        }
         return ResponseEntity.ok(userDto);
     }
+
     @GetMapping("/search-ids")
     public List<Long> searchUserIds(
             @RequestParam(required = false) String firstName,
@@ -56,24 +54,22 @@ public class UserController {
         Specification<User> spec = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
+            // Attention : Utiliser les noms des champs dans l'Entité Java (firstName, lastName)
             if (firstName != null && !firstName.isEmpty()) {
-                predicates.add(cb.like(cb.lower(root.get("prenom")), "%" + firstName.toLowerCase() + "%"));
+                predicates.add(cb.like(cb.lower(root.get("firstName")), "%" + firstName.toLowerCase() + "%"));
             }
             if (lastName != null && !lastName.isEmpty()) {
-                predicates.add(cb.like(cb.lower(root.get("name")), "%" + lastName.toLowerCase() + "%"));
+                predicates.add(cb.like(cb.lower(root.get("lastName")), "%" + lastName.toLowerCase() + "%"));
             }
             if (cin != null && !cin.isEmpty()) {
                 predicates.add(cb.equal(root.get("cin"), cin));
             }
             if (deptName != null && !deptName.isEmpty()) {
-                // Jointure avec la table Department (attribut nameDepartment)
                 predicates.add(cb.equal(root.join("department").get("nameDepartment"), deptName));
             }
-
             return cb.and(predicates.toArray(new Predicate[0]));
         };
 
-        // On ne récupère que les IDs pour limiter le volume de données transférées
         return userRepository.findAll(spec).stream()
                 .map(User::getId)
                 .collect(Collectors.toList());

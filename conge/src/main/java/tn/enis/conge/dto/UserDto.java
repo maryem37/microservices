@@ -6,13 +6,13 @@ import tn.enis.conge.enums.UserRole;
 
 @Data
 public class UserDto {
-
     private Long id;
-    private String name;
+    private String firstName;
+    private String lastName;
     private String email;
-    private Integer numTel;
-    private String password;
+    private String numTel;
     private UserRole userRole;
     private Long departmentId;
     private String departmentName;
+    // Pas de password ici pour la sécurité !
 }

@@ -23,65 +23,67 @@ public class AuthCongeImpl implements AuthConge{
     private final DepartmentRepository departmentRepository;
 
     @PostConstruct
-    @Transactional
-    public void createDefaultAccounts() {
-
-        // ADMINISTRATION
-        if (userRepository.findByCin("00000000").isEmpty()) {
+    public void createDefaultAdmin() {
+        if (userRepository.findFirstByEmail("admin@test.com").isEmpty()) {
             User admin = new User();
-            admin.setLastName("Administration");
-            admin.setEmail("administration@test.com");
-            admin.setPassword(new BCryptPasswordEncoder().encode("admin"));
+            admin.setFirstName("Super");
+            admin.setLastName("Admin");
+            admin.setEmail("admin@test.com");
+            admin.setPassword(new BCryptPasswordEncoder().encode("admin123"));
             admin.setUserRole(UserRole.Administration);
             admin.setCin("00000000");
             userRepository.save(admin);
-            System.out.println("Admin account created");
+            System.out.println("Default Admin account created.");
         }
     }
-
 
 
     @Override
     public UserDto createEmployer(SignupRequest signupRequest) {
 
-        // 2. VALIDATION : On vérifie tout de suite si l'ID est là
+        // 1. Validation Département
         if (signupRequest.getDepartmentId() == null) {
-            throw new IllegalArgumentException("Erreur : Le département est obligatoire pour l'inscription.");
+            throw new IllegalArgumentException("Error: Department ID is required.");
         }
 
-        // 3. RÉCUPÉRATION : On va chercher le vrai département en base
-        // Si l'ID n'existe pas, on arrête tout (Throw Exception)
         Department department = departmentRepository.findById(signupRequest.getDepartmentId())
-                .orElseThrow(() -> new RuntimeException("Département introuvable avec l'ID : " + signupRequest.getDepartmentId()));
+                .orElseThrow(() -> new RuntimeException("Error: Department not found with ID: " + signupRequest.getDepartmentId()));
 
+        // 2. Création de l'entité User (Mapping complet)
         User user = new User();
-        user.setLastName(signupRequest.getName());
+        user.setFirstName(signupRequest.getFirstName());
+        user.setLastName(signupRequest.getLastName());
         user.setEmail(signupRequest.getEmail());
-        user.setPassword(new BCryptPasswordEncoder().encode(signupRequest.getPassword()));
-        user.setUserRole(signupRequest.getUserRole());
         user.setCin(signupRequest.getCin());
+        user.setNumTel(signupRequest.getNumTel());
+        user.setUserRole(signupRequest.getUserRole());
 
-        // 4. ASSOCIATION : C'est l'étape CRUCIALE que tu avais oubliée !
-        // Sans ça, la colonne department_id reste NULL en base
+        // Association du département
         user.setDepartment(department);
 
-        // Sauvegarde (Le trigger @Formula du département se mettra à jour tout seul plus tard)
+        // Mot de passe (Saisi par l'admin ou par défaut "12345678" si vide)
+        String rawPassword = (signupRequest.getPassword() != null && !signupRequest.getPassword().isEmpty())
+                ? signupRequest.getPassword()
+                : "12345678";
+        user.setPassword(new BCryptPasswordEncoder().encode(rawPassword));
+
+        // 3. Sauvegarde
         User createdUser = userRepository.save(user);
 
-        // Construction du DTO de réponse
+        // 4. Mapping vers UserDto pour le retour
         UserDto userDto = new UserDto();
         userDto.setId(createdUser.getId());
-        userDto.setName(createdUser.getLastName());
+        userDto.setFirstName(createdUser.getFirstName());
+        userDto.setLastName(createdUser.getLastName());
         userDto.setEmail(createdUser.getEmail());
+        userDto.setNumTel(createdUser.getNumTel());
         userDto.setUserRole(createdUser.getUserRole());
-
-        // 5. REMPLISSAGE SÉCURISÉ
-        // On est sûr que getDepartment() n'est pas null car on l'a forcé à l'étape 3
         userDto.setDepartmentId(department.getId());
         userDto.setDepartmentName(department.getNameDepartment());
 
         return userDto;
     }
+
     @Override
     public boolean hasCustomerWithEmail(String email) {
         return userRepository.findFirstByEmail(email).isPresent();

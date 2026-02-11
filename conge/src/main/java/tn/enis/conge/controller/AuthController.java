@@ -26,25 +26,11 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final AuthConge authConge;
     private final UserServiceImpl userService;
     private final JWTutil jwtUtil;
     private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
 
-    // ---------- SIGNUP ----------
-    @PostMapping("/signup")
-    public ResponseEntity<?> signupEmploye(@RequestBody SignupRequest signupRequest) {
-
-        if (authConge.hasCustomerWithEmail(signupRequest.getEmail())) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_ACCEPTABLE)
-                    .body("Customer already exists with this email");
-        }
-
-        UserDto createdUser = authConge.createEmployer(signupRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
-    }
 
     // ---------- LOGIN ----------
     @PostMapping("/login")
@@ -79,8 +65,5 @@ public class AuthController {
 
         return ResponseEntity.ok(response);
     }
-
-
-
 
 }
