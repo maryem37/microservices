@@ -61,21 +61,21 @@ Microservices
          ├── pom.xml (Parent POM)
          └── HELP.md
 
-┌─────────────────────┐         ┌──────────────────────┐
-│   Auth Service      │         │  Leave Request       │
-│   (Port: 9000)      │◄───────►│  Service             │
-│                     │  Feign  │  (Port: 9001)        │
-│  - User Management  │         │  - Leave Requests    │
-│  - Authentication   │         │  - Approval Workflow │
-│  - JWT Tokens       │         │  - Holiday Calc      │
-└─────────────────────┘         └──────────────────────┘
-         │                               │
-         │                               │
-         ▼                               ▼
-  ┌─────────────┐               ┌─────────────┐
-  │  conge_db   │               │demande_     │
-  │             │               │conge_db     │
-  └─────────────┘               └─────────────┘
+         ┌─────────────────────┐         ┌──────────────────────┐
+         │   Auth Service      │         │  Leave Request       │
+         │   (Port: 9000)      │◄───────►│  Service             │
+         │                     │  Feign  │  (Port: 9001)        │
+         │  - User Management  │         │  - Leave Requests    │
+         │  - Authentication   │         │  - Approval Workflow │
+         │  - JWT Tokens       │         │  - Holiday Calc      │
+         └─────────────────────┘         └──────────────────────┘
+                  │                               │
+                  │                               │
+                  ▼                               ▼
+           ┌─────────────┐               ┌─────────────┐
+           │  conge_db   │               │demande_     │
+           │             │               │conge_db     │
+           └─────────────┘               └─────────────┘
 Service Communication
 Feign Client: Inter-service communication for user validation
 REST APIs: External communication
