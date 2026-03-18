@@ -32,6 +32,9 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
 
+    @Column(name = "is_temporary_password")
+    private Boolean isTemporaryPassword = false;
+
     @Column(name = "num_tel")
     private String numTel;
 

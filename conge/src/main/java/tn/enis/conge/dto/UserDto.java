@@ -14,5 +14,5 @@ public class UserDto {
     private UserRole userRole;
     private Long departmentId;
     private String departmentName;
-    // Pas de password ici pour la sécurité !
+    private Boolean isTemporaryPassword = false;
 }
